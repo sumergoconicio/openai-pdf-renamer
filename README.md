@@ -7,7 +7,11 @@ This script does the following:
 
 **Caution**
 
-Please manage the security of your own data. Any loss of personal content due to errors in this script are your responsibility. Vet, test and modify the script to meet your needs.
+Please manage the security of your own data. 
+Any loss of personal content due to errors in this script are your responsibility. Vet, test and modify the script to meet your needs.
+
+**Known issues**
+This script will not work on OCR image-based PDFs. The process will return Unknown - Unknown values for metadata, and documents will get rewritten. Don't do it.
 
 **Changelog**
 - v0.1 - direct filename dump from OpenAI response
