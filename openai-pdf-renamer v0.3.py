@@ -145,16 +145,16 @@ def rename_pdfs_in_directory(directory):
             print(f"Found file {filepath}")
             
             new_file_name = rename_pdf_based_on_title(filepath)
-            
-            if new_file_name in [f for f in os.listdir(directory) if f.endswith(".pdf")]:
-                print(f"The new filename '{new_file_name}' already exists.")
-                new_file_name += "_01"
-                
             if not new_file_name.endswith(".pdf"):
                 new_file_name = new_file_name + ".pdf"
             else:
                 print("already a PDF")    
 
+            if new_file_name in [f for f in os.listdir(directory) if f.endswith(".pdf")]:
+                print(f"The new filename '{new_file_name}' already exists.")
+                new_file_name += "_01"
+                
+            
             if new_file_name != None:    
                 new_filepath =os.path.join(directory, new_file_name)
             try:
