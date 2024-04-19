@@ -6,6 +6,7 @@ This script does the following:
 - and renames files with the results.
 
 **Caution**
+
 Please manage the security of your own data. Any loss of personal content due to errors in this script are your responsibility. Vet, test and modify the script to meet your needs.
 
 **Changelog**
