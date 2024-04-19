@@ -168,7 +168,7 @@ def rename_pdfs_in_directory(directory):
 # when you run the script or else 
 # it will ask you to manually input the path otherwise
 def main():
-    directory = '/Users/naveensrivatsav/Desktop/DOCUMENT INBOX'  # Replace with your PDF directory path
+    directory = ''  # Replace with your PDF directory path
     if directory == '':
       directory = input("Please input your path:")
     rename_pdfs_in_directory(directory)
