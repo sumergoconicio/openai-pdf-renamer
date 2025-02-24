@@ -12,9 +12,10 @@ Any loss of personal content due to errors in this script are your responsibilit
 
 **Known issues**
 
-This script will not work on OCR image-based PDFs. The process will return Unknown - Unknown values for metadata, and documents will get rewritten. Don't do it.
+This script will not work on OCR image-based PDFs. The process will return Unknown - Unknown values for metadata, and documents could get rewritten. v0.5 preserves original filenames in that case, but do consider keeping backups of important data and checking total file counts if need be.
 
 **Changelog**
 - v0.1 - direct filename dump from OpenAI response
 - v0.2 - OpenAI response structured as JSON with title, author and pubdate fields
-- v0.3 - PDF metadata is also replaced with guessed content (coming soon)
+- v0.3 - PDF metadata is also replaced with guessed content
+- v0.5 - affordances for "unknown" results defaults to preserving original filenames
