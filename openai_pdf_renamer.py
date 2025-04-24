@@ -18,7 +18,7 @@
 # Success == \A f \in pdf_files: FileIsNamedAndTagged(f)
 # ----
 # """
-# Library/Design notes: Uses OpenAI's gpt-3.5-turbo for fast, cost-effective LLM inference. PDF IO by PyPDF2; .env-driven config for secure API keys. Modular design for clarity, diagnostics, future backend swaps, and easy extension.
+# Library/Design notes: Uses OpenAI's gpt-4.1-mini for fast, cost-effective LLM inference. PDF IO by PyPDF2; .env-driven config for secure API keys. Modular design for clarity, diagnostics, future backend swaps, and easy extension.
 ###########
 
 # To run: pip install openai PyPDF2 python-dotenv
