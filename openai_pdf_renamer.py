@@ -72,20 +72,37 @@ def extract_text_from_pdf(pdf_path: Path, max_pages: int = 5) -> Optional[str]:
         return None
 
 SYSTEM_PROMPT = (
-    "You are a librarian interested in the organization of knowledge. "
-    "You assist in renaming digital files to build a perfect library. "
-    "Only respond in JSON with fields: author, title, pubdate as CamelCase strings. Use spaces and not underscores between words within fields."
-    "If unsure, print 'Various' for author or 'Unknown' for title. pubdate is four-digit year."
+    "You are an expert librarian specializing in digital knowledge management, renowned for your meticulous approach to naming, organizing, and ensuring the discoverability of electronic resources. In your process, you practice analytical cross-referencing, triangulating key bibliographic details from multiple points within a document (title page, copyright, TOC, citation instructions). Your philosophy is driven by optimally balancing user searchability (discoverability), source traceability (sourceability), and archival order. You bring a systems view: every filename you craft is an intentional node in a vast, navigable digital knowledge ecosystem, shaped to maximize both present retrieval and future relevance."
+    "Upon receiving the first ten pages of raw text from a PDF, your task is to accurately infer and assemble three bibliographic details for effective PDF file naming. Your priority is capturing the full title and subtitle of the document. Institutional/individual author as a secondary priority and year of publication as a tertiary priority."
+    "Title: Extract the complete, official title (including subtitle), prioritizing accuracy and specificity. Cross-check its consistency by locating it on the title page, copyright page, table of contents, and in citation guidance sections."
+    "Author/Institution: Determine the primary institution(s) or lead author(s). Give preference to institutional names over individuals. If multiple institutions are listed, include a maximum of three (joined by \"&\"). For individual authors in journal papers, use the lead author’s name followed by \"etal\" if appropriate."
+    "Year of Publication: Infer the most likely year (including month if present for increased precision), also validated across several mentions in the document."
+    "Structure the filename as: [Institution(s) or Author] - [Full Title] ([Year])"
+    "Example: OECD & MissionLab - Harnessing mission governance to achieve national climate targets (2025)"
+    "Prioritize institutions and specifically use their most recognisable acronyms. For example, Harvard University should be abbreviated to HarvardU, International Monetary Fund should be labelled IMF, Bank of America should be shortened to BoA and so on. If there are more than two instituions, mention only the primary institution (acronym preferred always) following by '& Various'."
+    "Only use individual names if institutions are unclear/not primary. For single-author papers, include the full name(s); for two or more authors, use the lead name and \"etal\"."
+    "Month or season in the date is included if available, else use just the year."
+    "Always use an ampersand (&) to separate institutions (maximum of 3) and 'etal' to indicate multiple authors after only naming one author in the title."
+    "If unclear, suggest author as Various and Title as Unknown."
 )
 
-def build_user_msg(text: str) -> str:
+def build_user_msg(prompt_text: str) -> str:
     return (
-        "Given the following text, guess probable author (with a preference for institutional acronyms over individuals), title, and publication year. "
-        "Format like: OrgA & OrgB & Jane Smith - The Document Title- Subtitles (2023). "
-        "Strictly JSON: {'author':'', 'title':'', 'pubdate':''}. "
-        "----\n"
-        f"{text[:3000]}\n"
-        "----"
+        f"Given the following rawtext from the first 10 pages of a PDF, guess probable author, title, and publication year."
+        f"Here are 10 examples of how I want titles to be structured:"
+        f"SpringerOpen - African Handbook of Climate Change Adaptation (2022)"
+        f"GIZ & NCFA & UNEP-FI & Global Canopy & Emerging Markets Dialogu - making FIs more resilient to environmental risks (Apr, 2017)"
+        f"NBER - Adapting To Flood Risk Evidence From A Panel Of Global Cities (2022)"
+        f"Gaby Frangieh - Credit spread risk in the banking book (2025)"
+        f"Banca d'Italia & IMF - Embedding sustainability in credit risk assessment (Mar, 2025)"
+        f"Augusto Blanc-Blocquel etal - Climate-related default probabilities (2024)"
+        f"Misereor - Towards a socio-ecological transformation of the economy (Mar, 2024)"
+        f"Esther Shears etal - How central banks manage climate and energy transition risks (Feb, 2025)"
+        f"OECD & ColumbiaU - Harnessing mission governance to achieve national climate targets (2025)"
+        f"OxfordU - Input for the update of the SBTi corporate net-zero standard (April, 2025)"
+        f"Put simply, your guess should look like this: OrgA & OrgB & Jane Smith - The Document Title- Subtitles (2023)."
+        f"Please output strictly JSON in the following format: {{'author':'', 'title':'', 'pubdate':''}}. "
+        f"----\n{prompt_text}\n----"
     )
 
 def query_llm_for_metadata(text: str, retries: int = 2, model: str = "gpt-4.1-mini") -> Optional[Dict[str, str]]:
@@ -136,9 +153,8 @@ def clean_filename(raw: str, max_length: int = 128) -> str:
     Role: Ensures cross-platform safety, dedupe, and human readability.
     """
     name = re.sub(r'[\/:*?"<>|]', '', raw)
-    name = name.replace(' ', '_')
-    name = re.sub(r'_{2,}', '_', name)
-    return name[:max_length].strip('_')
+    # Do not replace spaces with underscores; just remove forbidden characters and trim length
+    return name[:max_length].strip()
 
 def find_unique_pdf_path(base: Path, candidate_name: str) -> Path:
     """

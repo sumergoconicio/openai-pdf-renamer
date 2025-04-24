@@ -1,2 +1,5 @@
 .env
 *.pdf
+sandbox.ipynb
+old-code/
+testfolder/
